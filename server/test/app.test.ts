@@ -1,18 +1,19 @@
-import app from '../src/app';
+import { assert } from 'chai';
 import supertest from 'supertest';
+import app from '../src/app';
 
 type SuperTest = supertest.SuperTest<supertest.Test>;
 
 describe('app', () => {
   let request: SuperTest;
 
-  beforeEach(async () => {
-    request = await supertest(app);
+  beforeEach((done) => {
+    request = supertest(app);
+    done();
   });
 
   it('should return a successful response for GET /', async () => {
     const data = await request.get('/');
-    return expect(data.status).toBe(200);
+    assert.deepEqual(data.status, 200);
   });
 });
-
