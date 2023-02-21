@@ -1,21 +1,15 @@
-import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
-import moongose, { ConnectOptions } from 'mongoose';
-
-dotenv.config({ path: './config.env' });
-import app from './app';
 import mongoose from 'mongoose';
+dotenv.config();
+import app from './app';
 
-const DB = process.env.DB.replace('<PASSWORD>', process.env.DB_PASSWORD);
+const DB = process.env.DB_DEV
+  .replace('<PASSWORD>', process.env.DB_PASSWORD)
+  .replace('<DB_TYPE>', process.env.DB_DEV_NAME);
 
 mongoose.connect(DB).then(() => console.log('DB connection successful!'));
 
-if (require.main === module) {
-  // true if file is executed
-  app.listen(process.env.PORT, () => {
-    console.log('server started at http://localhost:' + process.env.PORT);
-    console.log('Press CTRL + C to quit....');
-  });
-}
-
-export default app;
+app.listen(process.env.PORT, () => {
+  console.log('server started at http://localhost:' + process.env.PORT);
+  console.log('Press CTRL + C to quit....');
+});
