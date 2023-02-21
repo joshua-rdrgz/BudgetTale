@@ -1,6 +1,13 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@models/*": ["src/models/*"],
+      "@errors": ["../errorMessages/errorMessages"]
+    },
+    "types": ["mocha", "chai"],
+  },
+  "include": ["src/**/*", "test/**/*"]
 }
