@@ -6,8 +6,10 @@
   "scripts": {
     "build": "webpack",
     "depcheck": "depcheck",
-    "start:dev": "concurrently \"NODE_ENV=development webpack\" \"npm run run:dev\"",
+    "start": "concurrently \"NODE_ENV=development webpack\" \"npm run run:dev\"",
+    "start:prod": "concurrently \"NODE_ENV=production webpack\" \"npm run run:prod\"",
     "run:dev": "NODE_ENV=development nodemon build/index.js",
+    "run:prod": "NODE_ENV=production nodemon build/index.js",
     "test": "NODE_ENV=test mocha"
   },
   "keywords": [],
@@ -17,6 +19,7 @@
     "@types/chai": "^4.3.4",
     "@types/express": "^4.17.17",
     "@types/mocha": "^10.0.1",
+    "@types/morgan": "^1.9.4",
     "@types/node": "^18.13.0",
     "@types/supertest": "^2.0.12",
     "@types/webpack-node-externals": "^2.5.3",
