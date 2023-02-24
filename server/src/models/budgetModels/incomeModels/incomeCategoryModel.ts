@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { validateUniqueName } from '@models/modelUtils';
-import { categoryErrors } from '@errors';
+import { categoryErrors } from '@errorMessages';
 
 export interface IIncomeCategories {
   name: string;

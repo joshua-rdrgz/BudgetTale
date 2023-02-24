@@ -1,5 +1,5 @@
 import { HydratedDocument } from 'mongoose';
-import { categoryErrors } from '@errors';
+import { categoryErrors } from '@errorMessages';
 import { dropTestDB } from 'test/setup.test';
 import {
   validateMissingOrIncorrectProperty,

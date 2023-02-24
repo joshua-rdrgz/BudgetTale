@@ -3,7 +3,7 @@ import {
   expenseCategorySchema,
   IExpenseCategories,
 } from './expenseCategoryModel';
-import { categoryGroupErrors } from '@errors';
+import { categoryGroupErrors } from '@errorMessages';
 import { validateUniqueName } from '@models/modelUtils';
 
 export interface IExpenseCategoryGroups {

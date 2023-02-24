@@ -7,8 +7,7 @@ import {
   expenseCategoryGroupSchema,
   IExpenseCategoryGroups,
 } from './expenseModels/expenseCategoryGroupModel';
-import { budgetErrors } from '@errors';
-import { validateUniqueName } from '@models/modelUtils';
+import { budgetErrors } from '@errorMessages';
 
 export interface IBudget {
   incomes: Types.Array<IIncomeCategoryGroups>;

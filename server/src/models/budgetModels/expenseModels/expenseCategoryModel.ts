@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from 'mongoose';
-import { categoryErrors } from '@errors';
+import { categoryErrors } from '@errorMessages';
 import { validateUniqueName } from '@models/modelUtils';
 
 export interface IExpenseCategories {

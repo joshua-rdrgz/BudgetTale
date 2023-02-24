@@ -1,7 +1,7 @@
 import { Schema, model, Types } from 'mongoose';
 import { incomeCategorySchema, IIncomeCategories } from './incomeCategoryModel';
 import { validateUniqueName } from '@models/modelUtils';
-import { categoryGroupErrors } from '@errors';
+import { categoryGroupErrors } from '@errorMessages';
 
 export interface IIncomeCategoryGroups {
   name: string;

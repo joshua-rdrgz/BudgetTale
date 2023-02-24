@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { transactionErrors } from '@errors';
+import { transactionErrors } from '@errorMessages';
 
 export interface ITransactions {
   // for monthModel.ts

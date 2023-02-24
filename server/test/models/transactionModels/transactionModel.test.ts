@@ -1,4 +1,4 @@
-import { transactionErrors } from '@errors';
+import { transactionErrors } from '@errorMessages';
 import { dropTestDB } from 'test/setup.test';
 import { validateMissingOrIncorrectProperty } from 'test/models/testModelUtils';
 import Transaction, {
