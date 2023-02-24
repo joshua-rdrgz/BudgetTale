@@ -17,6 +17,13 @@ module.exports = {
     alias: {
       '@src': path.resolve(__dirname, 'src'),
       '@models': path.resolve(__dirname, 'src/models'),
+      '@routes': path.resolve(__dirname, 'src/routes'),
+      '@controllers': path.resolve(__dirname, 'src/controllers'),
+      '@errorMessages': path.resolve(
+        __dirname,
+        '../errorMessages/errorMessages.ts'
+      ),
+      '@errors': path.resolve(__dirname, 'src/errors'),
     },
   },
   externals: [nodeExternals()],
