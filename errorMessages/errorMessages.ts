@@ -28,6 +28,11 @@ export const transactionErrors = {
 } as const;
 
 export const monthErrors = {
+  name: 'A month must have name: [Month] [Year]',
   budget: 'A month must always contain a budget field.',
   transactions: 'A month must always have a transactions field.',
+} as const;
+
+export const userErrors = {
+  mustContain1Month: 'A user must contain at least 1 month.',
 } as const;
