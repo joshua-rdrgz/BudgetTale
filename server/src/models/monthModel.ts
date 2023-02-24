@@ -3,16 +3,23 @@ import { budgetSchema, IBudget } from './budgetModels/budgetModel';
 import {
   transactionSchema,
   ITransactions,
-  ITransaction,
 } from './transactionModels/transactionModel';
-import { monthErrors } from '@errors';
+import { monthErrors } from '@errorMessages';
 
 export interface IMonth {
+  month: string;
   budget: IBudget;
   transactions: Types.Array<ITransactions>;
 }
 
-const monthSchema = new Schema<IMonth>({
+export const monthSchema = new Schema<IMonth>({
+  month: {
+    type: String,
+    default: new Date(Date.now()).toLocaleString('en-US', {
+      month: 'long',
+      year: 'numeric',
+    }),
+  },
   budget: {
     type: budgetSchema,
     required: [true, monthErrors.budget],

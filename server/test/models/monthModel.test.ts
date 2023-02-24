@@ -1,5 +1,5 @@
 import { HydratedDocument } from 'mongoose';
-import { monthErrors } from '@errors';
+import { monthErrors } from '@errorMessages';
 import { dropTestDB } from 'test/setup.test';
 import { validateMissingOrIncorrectProperty } from 'test/models/testModelUtils';
 import Month, { IMonth } from '@models/monthModel';
@@ -26,7 +26,7 @@ describe('Month Model', () => {
 
   describe('transactions property', () => {
     it('should be required', async () => {
-      const monthObj: Omit<IMonth, 'transactions'> = {
+      const monthObj: Omit<IMonth, 'transactions' | 'month'> = {
         budget: {
           incomes: [
             {
