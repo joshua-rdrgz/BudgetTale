@@ -17,6 +17,7 @@ export interface IBudget {
 export const budgetSchema = new Schema<IBudget>({
   incomes: {
     type: [incomeCategoryGroupSchema],
+    default: () => [],
     validate: {
       validator: function (categoryGroups: IIncomeCategoryGroups[]) {
         return categoryGroups.length >= 1;
@@ -26,6 +27,7 @@ export const budgetSchema = new Schema<IBudget>({
   },
   expenses: {
     type: [expenseCategoryGroupSchema],
+    default: () => [],
     validate: {
       validator: function (categoryGroups: IExpenseCategoryGroups[]) {
         return categoryGroups.length >= 1;
