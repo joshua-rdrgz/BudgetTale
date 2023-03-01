@@ -17,7 +17,4 @@ router.route('/:userId').all(function (req, res, next) {
   nonCreatedRoute(req, res, next);
 });
 
-// ATTACH NESTED ROUTES: api/v1/users/:userId/months
-router.use('/:userId/months', monthRouter);
-
 export default router;

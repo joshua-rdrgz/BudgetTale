@@ -6,15 +6,15 @@ import nonCreatedRoute from '@routes/nonCreatedRoutes';
 const router = Router();
 
 // ASSIGN ROUTES
-// api/v1/users/:userId/months/:monthId/budgets
+// api/v1/months/:monthId/budgets
 router.route('/').all(function (req, res, next) {
   nonCreatedRoute(req, res, next);
 });
 
-// ATTACH NESTED ROUTES: api/v1/users/:userId/months/:monthId/budgets/incomes
+// ATTACH NESTED ROUTES: api/v1/months/:monthId/budgets/incomes
 router.use('/incomes', incomeRouter);
 
-// NESTED ROUTES: api/v1/users/:userId/months/:monthId/budgets/expenses
+// NESTED ROUTES: api/v1/months/:monthId/budgets/expenses
 router.use('/expenses', expenseRouter);
 
 export default router;
