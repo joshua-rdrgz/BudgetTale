@@ -12,8 +12,8 @@ const userSchema = new Schema<IUser>({
     // makes default Date.now functional: See https://mongoosejs.com/docs/subdocs.html#subdocument-defaults for details
     default: () => [],
     validate: {
-      validator: function (transactions: Types.Array<IMonth>) {
-        return transactions.length >= 1;
+      validator: function (users: Types.Array<IMonth>) {
+        return users.length >= 1;
       },
       message: userErrors.mustContain1Month,
     },
