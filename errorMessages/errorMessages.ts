@@ -23,8 +23,14 @@ export const transactionErrors = {
   category: 'A transaction must have a category.',
   date: 'A transaction must have a date.',
   description: 'A transaction must have a description.',
+  descriptionMinLength:
+    'A transaction description must be at least 15 characters.',
+  descriptionMaxLength:
+    'A transaction description must only contain up to 100 characters.',
   amount: 'A transaction must have an amount.',
   title: 'A transaction must have a title.',
+  titleMinLength: 'A transaction title must be at least 5 characters.',
+  titleMaxLength: 'A transaction title must only contain up to 30 characters.',
 } as const;
 
 export const monthErrors = {

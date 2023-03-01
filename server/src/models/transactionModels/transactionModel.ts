@@ -1,11 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { transactionErrors } from '@errorMessages';
 
-export interface ITransactions {
-  // for monthModel.ts
-  transactions: ITransaction[];
-}
-
 export interface ITransaction {
   // exported for testing
   category: string;
@@ -23,12 +18,14 @@ export const transactionSchema = new Schema<ITransaction>({
   },
   date: {
     type: Date,
-    default: Date.now,
+    default: new Date(Date.now()),
     required: [true, transactionErrors.date],
   },
   description: {
     type: String,
     required: [true, transactionErrors.description],
+    minLength: [15, transactionErrors.descriptionMinLength],
+    maxLength: [100, transactionErrors.descriptionMaxLength],
   },
   amount: {
     // TODO: pos/neg value based on category
@@ -38,6 +35,8 @@ export const transactionSchema = new Schema<ITransaction>({
   title: {
     type: String,
     required: [true, transactionErrors.title],
+    minLength: [5, transactionErrors.titleMinLength],
+    maxLength: [30, transactionErrors.titleMaxLength],
   },
 });
 

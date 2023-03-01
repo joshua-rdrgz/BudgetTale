@@ -13,7 +13,7 @@ const testRequirementOfTransactionProperty = async (
     category: 'Category',
     amount: -5,
     title: 'Title',
-    description: 'Description',
+    description: 'The description goes here',
     date: new Date(Date.now()),
   };
   delete transactionObj[propertyName];
