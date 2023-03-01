@@ -41,4 +41,11 @@ export const monthErrors = {
 
 export const userErrors = {
   mustContain1Month: 'A user must contain at least 1 month.',
+  name: 'A user must have a name.',
+  email: 'A user must have an email.',
+  validEmail: 'Please enter a valid email address.',
+  uniqueEmail: 'Email is already in use.  Please use another one.',
+  password: 'A user must have a password.',
+  passwordMinLength: 'A user password must be at least 8 characters, more is preferable.',
+  passwordConfirm: 'A user must confirm their password.',
 } as const;
