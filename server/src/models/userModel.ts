@@ -1,5 +1,6 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model, Types, PreMiddlewareFunction, HydratedDocument } from 'mongoose';
 import validator from 'validator';
+import bcrypt from 'bcryptjs';
 import { IMonth, monthSchema } from './monthModel';
 import { userErrors } from '@errorMessages';
 import { validateUniqueName } from './modelUtils';
@@ -7,10 +8,14 @@ import { validateUniqueName } from './modelUtils';
 export interface IUser {
   name: String;
   email: String;
-  photo: String;
+  photo?: String;
   password: String;
   passwordConfirm: String;
   months: Types.Array<IMonth>;
+}
+
+interface UserDoc extends HydratedDocument<IUser> {
+  password: string;
 }
 
 const userSchema = new Schema<IUser>({
@@ -61,6 +66,13 @@ const userSchema = new Schema<IUser>({
     },
   },
 });
+
+userSchema.pre('save', async function(this: UserDoc, next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
+} as PreMiddlewareFunction);
 
 const User = model<IUser>('User', userSchema);
 
