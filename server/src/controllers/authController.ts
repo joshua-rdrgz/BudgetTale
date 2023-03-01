@@ -9,6 +9,7 @@ export default {
       email: req.body.email,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
+      months: req.body.months,
     });
 
     res.status(201).json({
