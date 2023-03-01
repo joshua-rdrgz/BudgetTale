@@ -28,6 +28,10 @@ type TType =
   | IExpenseCategories;
 
 const modelObj: IUser = {
+  name: 'Test User',
+  email: 'testing@gmail.com',
+  password: 'testpassword',
+  passwordConfirm: 'testpassword',
   months: [
     {
       month: 'February 2023',
