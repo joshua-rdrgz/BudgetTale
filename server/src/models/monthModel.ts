@@ -2,14 +2,14 @@ import { Schema, model, Types } from 'mongoose';
 import { budgetSchema, IBudget } from './budgetModels/budgetModel';
 import {
   transactionSchema,
-  ITransactions,
+  ITransaction
 } from './transactionModels/transactionModel';
 import { monthErrors } from '@errorMessages';
 
 export interface IMonth {
   month: string;
   budget: IBudget;
-  transactions: Types.Array<ITransactions>;
+  transactions: Types.Array<ITransaction>;
 }
 
 export const monthSchema = new Schema<IMonth>({
@@ -29,7 +29,7 @@ export const monthSchema = new Schema<IMonth>({
     // makes default Date.now functional: See https://mongoosejs.com/docs/subdocs.html#subdocument-defaults for details
     default: () => [],
     validate: {
-      validator: function (transactions: Types.Array<ITransactions>) {
+      validator: function (transactions: Types.Array<ITransaction>) {
         return transactions.length >= 1;
       },
       message: monthErrors.transactions,
