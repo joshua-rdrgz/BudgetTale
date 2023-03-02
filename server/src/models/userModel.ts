@@ -49,6 +49,7 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: [true, userErrors.password],
     minLength: [8, userErrors.passwordMinLength],
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -67,12 +68,18 @@ const userSchema = new Schema<IUser>({
   },
 });
 
+// USER MODEL PRE MIDDLEWARE
 userSchema.pre('save', async function(this: UserDoc, next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
   next();
 } as PreMiddlewareFunction);
+
+// USER MODEL METHOD INSTANCES
+userSchema.methods.verifyCorrectPassword = async function(passwordReceived: string, passwordActual: string) {
+  return await bcrypt.compare(passwordReceived, passwordActual);
+}
 
 const User = model<IUser>('User', userSchema);
 

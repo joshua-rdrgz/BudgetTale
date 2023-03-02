@@ -8,4 +8,7 @@ const router = Router();
 // api/v1/createUser
 router.post('/createUser', authController.createUser);
 
+// api/v1/loginUser
+router.post('/loginUser', authController.loginUser);
+
 export default router;
