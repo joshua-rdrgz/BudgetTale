@@ -1,5 +1,6 @@
-import User from "@models/userModel";
-import catchAsync from "@errors/catchAsync";
+import jwt from 'jsonwebtoken';
+import User from '@models/userModel';
+import catchAsync from '@errors/catchAsync';
 
 export default {
   createUser: catchAsync(async function (req, res, next) {
@@ -12,9 +13,14 @@ export default {
       months: req.body.months,
     });
 
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRATION,
+    });
+
     res.status(201).json({
       status: 'success',
+      token,
       data: { user },
     });
   }),
-}
+};
