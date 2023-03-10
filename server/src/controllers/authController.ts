@@ -1,3 +1,4 @@
+import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import User from '@models/userModel';
 import catchAsync from '@errors/catchAsync';
@@ -7,6 +8,11 @@ const signToken = (id: string) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRATION,
   });
+
+const verifyJwt: (
+  token: string,
+  secret: jwt.Secret
+) => Promise<jwt.JwtPayload> = promisify(jwt.verify);
 
 export default {
   createUser: catchAsync(async function (req, res, next) {
@@ -19,7 +25,7 @@ export default {
       months: req.body.months,
     });
 
-    const token = signToken(user._id);
+    const token = signToken(user._id.toString());
 
     res.status(201).json({
       status: 'success',
@@ -27,6 +33,7 @@ export default {
       data: { user },
     });
   }),
+
   loginUser: catchAsync(async function (req, res, next) {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
@@ -42,11 +49,50 @@ export default {
       );
 
     // 3) Send token to client
-    const token = signToken(user._id);
+    const token = signToken(user._id.toString());
 
     res.status(200).json({
       status: 'success',
       token,
     });
+  }),
+
+  protectRoute: catchAsync(async (req, res, next) => {
+    // 1) Get token, check if exists
+    let token: string;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    )
+      token = req.headers.authorization.split(' ').pop();
+    if (!token)
+      return next(
+        new AppError('You are not logged in, please log in and try again.', 401)
+      );
+
+    // 2) Verify token (not expired or manipulated)
+    const decoded = await verifyJwt(token, process.env.JWT_SECRET);
+
+    // 3) Check if user still exists
+    const tokenedUser = await User.findById(decoded.id);
+    if (!tokenedUser)
+      return next(
+        new AppError(
+          'User no longer exists, please create a new account and try again.',
+          401
+        )
+      );
+
+    // 4) Check if user has changed their password since JWT was obtained
+    if (tokenedUser.passwordChangedAfter(decoded.iat))
+      return next(
+        new AppError('Password has recently changed, please log in again.', 401)
+      );
+
+    // 5) Assign user to 'req' for future middleware use
+    req.user = tokenedUser;
+
+    // 6) Grant access to the route
+    next();
   }),
 };

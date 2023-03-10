@@ -1,4 +1,11 @@
-import { Schema, model, Types, PreMiddlewareFunction, HydratedDocument } from 'mongoose';
+import {
+  Schema,
+  Model,
+  Types,
+  PreSaveMiddlewareFunction,
+  HydratedDocument,
+  model,
+} from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import { IMonth, monthSchema } from './monthModel';
@@ -6,19 +13,30 @@ import { userErrors } from '@errorMessages';
 import { validateUniqueName } from './modelUtils';
 
 export interface IUser {
-  name: String;
-  email: String;
-  photo?: String;
-  password: String;
-  passwordConfirm: String;
+  name: string;
+  email: string;
+  photo?: string;
+  password: string;
+  passwordConfirm: string;
+  passwordChangedAt?: Date;
   months: Types.Array<IMonth>;
 }
 
-interface UserDoc extends HydratedDocument<IUser> {
+interface IUserMethods {
+  verifyCorrectPassword(
+    passwordReceived: string,
+    passwordActual: string
+  ): Promise<boolean>;
+  passwordChangedAfter(JWTTimestamp: number): boolean;
+}
+
+type UserModel = Model<IUser, {}, IUserMethods>;
+
+export interface UserDoc extends HydratedDocument<IUser, IUserMethods> {
   password: string;
 }
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   name: {
     type: String,
     required: [true, userErrors.name],
@@ -36,7 +54,7 @@ const userSchema = new Schema<IUser>({
         message: userErrors.validEmail,
       },
       {
-        validator: async function (email: string) {
+        validator: async function (email: string): Promise<boolean> {
           const result: boolean = await validateUniqueName<IUser>(email, User);
           return result;
         },
@@ -55,32 +73,48 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: [true, userErrors.passwordConfirm],
   },
-  months: {
-    type: [monthSchema],
-    // makes default Date.now functional: See https://mongoosejs.com/docs/subdocs.html#subdocument-defaults for details
-    default: () => [],
-    validate: {
-      validator: function (users: Types.Array<IMonth>) {
-        return users.length >= 1;
-      },
-      message: userErrors.mustContain1Month,
-    },
-  },
+  // months: {
+  //   type: [monthSchema],
+  //   // makes default Date.now functional: See https://mongoosejs.com/docs/subdocs.html#subdocument-defaults for details
+  //   default: () => [],
+  //   validate: {
+  //     validator: function (users: Types.Array<IMonth>) {
+  //       return users.length >= 1;
+  //     },
+  //     message: userErrors.mustContain1Month,
+  //   },
+  // },
 });
 
 // USER MODEL PRE MIDDLEWARE
-userSchema.pre('save', async function(this: UserDoc, next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
   next();
-} as PreMiddlewareFunction);
+} as PreSaveMiddlewareFunction<UserDoc>);
 
 // USER MODEL METHOD INSTANCES
-userSchema.methods.verifyCorrectPassword = async function(passwordReceived: string, passwordActual: string) {
+userSchema.methods.verifyCorrectPassword = async function (
+  passwordReceived: string,
+  passwordActual: string
+) {
   return await bcrypt.compare(passwordReceived, passwordActual);
-}
+};
 
-const User = model<IUser>('User', userSchema);
+userSchema.methods.passwordChangedAfter = function (
+  this: UserDoc,
+  JWTTimestamp
+) {
+  // TRUE === user's JWT issued before change in password
+  // FALSE === user's JWT issued after change in password
+  if (this.passwordChangedAt) {
+    const currentPasswordChangedAt = this.passwordChangedAt.getTime() / 1000;
+    return currentPasswordChangedAt > JWTTimestamp;
+  }
+  return false;
+};
+
+const User = model<IUser, UserModel>('User', userSchema);
 
 export default User;
