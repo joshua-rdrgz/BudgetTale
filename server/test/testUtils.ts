@@ -32,6 +32,7 @@ const modelObj: IUser = {
   email: 'testing@gmail.com',
   password: 'testpassword',
   passwordConfirm: 'testpassword',
+  role: 'admin',
   months: [
     {
       month: 'February 2023',

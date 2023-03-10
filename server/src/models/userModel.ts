@@ -16,6 +16,7 @@ export interface IUser {
   name: string;
   email: string;
   photo?: string;
+  role: 'user' | 'admin';
   password: string;
   passwordConfirm: string;
   passwordChangedAt?: Date;
@@ -63,6 +64,11 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
     ],
   },
   photo: String,
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, userErrors.password],

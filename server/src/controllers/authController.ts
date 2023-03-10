@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
-import User from '@models/userModel';
+import { MiddlewareFunction } from '@types';
+import User, { IUser } from '@models/userModel';
 import catchAsync from '@errors/catchAsync';
 import AppError from '@errors/apiError';
 
@@ -23,6 +24,7 @@ export default {
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
       months: req.body.months,
+      role: req.body.role,
     });
 
     const token = signToken(user._id.toString());
@@ -95,4 +97,18 @@ export default {
     // 6) Grant access to the route
     next();
   }),
+
+  restrictRouteTo: (...roles: IUser['role'][]) => {
+    const returned: MiddlewareFunction = (req, res, next) => {
+      if (!roles.includes(req.user.role))
+        return next(
+          new AppError(
+            'You do not have permission to perform this action.',
+            403
+          )
+        );
+      next();
+    };
+    return returned;
+  },
 };

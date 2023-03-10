@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import nonCreatedRoute from '@routes/nonCreatedRoutes';
+import authController from '@controllers/authController';
 import userController from '@controllers/userController';
 
 const router = Router({ mergeParams: true });
@@ -9,7 +10,11 @@ const router = Router({ mergeParams: true });
 // api/v1/users
 router
   .route('/')
-  .get(userController.getAllUsers)
+  .get(
+    authController.protectRoute,
+    authController.restrictRouteTo('admin'),
+    userController.getAllUsers
+  );
 
 // api/v1/users/:userId
 router.route('/:userId').all(function (req, res, next) {
