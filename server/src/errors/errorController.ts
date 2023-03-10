@@ -26,6 +26,8 @@ export default function (
     if (error.statusCode === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
 
     sendErrorProd(error, res);
   }
@@ -74,4 +76,12 @@ function handleValidationErrorDB(err: any) {
   const errors = Object.values(err.errors).map((el: any) => el.message);
   const message = `Invalid input data: ${errors.join('. ')}`;
   return new AppError(message, 400);
+}
+
+function handleJWTError() {
+  return new AppError('Invalid token.  Please log in again!', 401);
+}
+
+function handleJWTExpiredError() {
+  return new AppError('Expired token.  Please log in again!', 401);
 }
