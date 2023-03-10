@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json());
 
 // ROUTE MOUNTING
-app.use('/api/v1', authRouter);
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/months', monthRouter);
 
