@@ -4,12 +4,13 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@models/*": ["src/models/*"],
       "@errorMessages": ["../errorMessages/errorMessages"],
+      "@types": ["types/types"],
+      "@models/*": ["src/models/*"],
       "@routes/*": ["src/routes/*"],
       "@controllers/*": ["src/controllers/*"],
       "@errors/*": ["src/errors/*"],
-      "@types": ["types/types"]
+      "@utils/*": ["src/utils/*"]
     },
     "types": ["mocha", "chai"]
   },

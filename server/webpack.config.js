@@ -16,15 +16,16 @@ module.exports = {
     extensions: ['.ts', '.js'],
     alias: {
       '@src': path.resolve(__dirname, 'src'),
-      '@models': path.resolve(__dirname, 'src/models'),
-      '@routes': path.resolve(__dirname, 'src/routes'),
-      '@controllers': path.resolve(__dirname, 'src/controllers'),
+      '@types': path.resolve(__dirname, 'types/types.ts'),
       '@errorMessages': path.resolve(
         __dirname,
         '../errorMessages/errorMessages.ts'
       ),
+      '@models': path.resolve(__dirname, 'src/models'),
+      '@routes': path.resolve(__dirname, 'src/routes'),
+      '@controllers': path.resolve(__dirname, 'src/controllers'),
       '@errors': path.resolve(__dirname, 'src/errors'),
-      '@types': path.resolve(__dirname, 'types/types.ts'),
+      '@utils': path.resolve(__dirname, 'src/utils'),
     },
   },
   externals: [nodeExternals()],
