@@ -1,13 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
+import { UserDoc } from '@models/userModel';
+
+interface IRequest extends Request {
+  user?: UserDoc;
+}
 
 type RouteFunction = (
-  req: Request,
+  req: IRequest,
   res: Response,
   next: NextFunction
 ) => Promise<void>;
 
 type ReturnedFunction = (
-  req: Request,
+  req: IRequest,
   res: Response,
   next: NextFunction
 ) => void;
