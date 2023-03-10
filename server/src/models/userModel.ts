@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {
   Schema,
   Model,
@@ -20,6 +21,8 @@ export interface IUser {
   password: string;
   passwordConfirm: string;
   passwordChangedAt?: Date;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
   months: Types.Array<IMonth>;
 }
 
@@ -29,6 +32,7 @@ interface IUserMethods {
     passwordActual: string
   ): Promise<boolean>;
   passwordChangedAfter(JWTTimestamp: number): boolean;
+  createPasswordResetToken(): string;
 }
 
 type UserModel = Model<IUser, {}, IUserMethods>;
@@ -78,7 +82,16 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   passwordConfirm: {
     type: String,
     required: [true, userErrors.passwordConfirm],
+    validate: {
+      validator: function (passwordConfirm: string): boolean {
+        return passwordConfirm === this.password;
+      },
+      message: 'Password and Confirm Password must match.',
+    },
   },
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
   // months: {
   //   type: [monthSchema],
   //   // makes default Date.now functional: See https://mongoosejs.com/docs/subdocs.html#subdocument-defaults for details
@@ -101,6 +114,23 @@ userSchema.pre('save', async function (next) {
 } as PreSaveMiddlewareFunction<UserDoc>);
 
 // USER MODEL METHOD INSTANCES
+userSchema.methods.createPasswordResetToken = function (this: UserDoc) {
+  const MINUTES_IN_MILS_UNTIL_EXPIRES = 10 * 60 * 1000;
+  // 1) Create random token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  // 2) Encrypt the token, set passwordResetToken / passwordResetExpires on user
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  this.passwordResetExpires = new Date(
+    Date.now() + MINUTES_IN_MILS_UNTIL_EXPIRES
+  );
+
+  return resetToken;
+};
+
 userSchema.methods.verifyCorrectPassword = async function (
   passwordReceived: string,
   passwordActual: string
