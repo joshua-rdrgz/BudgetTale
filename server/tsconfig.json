@@ -9,6 +9,7 @@
       "@routes/*": ["src/routes/*"],
       "@controllers/*": ["src/controllers/*"],
       "@errors/*": ["src/errors/*"],
+      "@types": ["types/types"]
     },
     "types": ["mocha", "chai"]
   },

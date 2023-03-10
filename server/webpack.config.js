@@ -24,6 +24,7 @@ module.exports = {
         '../errorMessages/errorMessages.ts'
       ),
       '@errors': path.resolve(__dirname, 'src/errors'),
+      '@types': path.resolve(__dirname, 'types/types.ts'),
     },
   },
   externals: [nodeExternals()],
