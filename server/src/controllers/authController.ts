@@ -1,11 +1,45 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
-import { MiddlewareFunction } from '@types';
-import User, { IUser } from '@models/userModel';
+import User, { IUser, UserDoc } from '@models/userModel';
 import catchAsync from '@errors/catchAsync';
 import AppError from '@errors/apiError';
 import sendEmail from '@utils/email';
+import { MiddlewareFunction, IRequest } from '@types';
+
+interface ICreateUser {
+  body: {
+    name: IUser['name'];
+    email: IUser['email'];
+    role: IUser['role'];
+    password: IUser['password'];
+    passwordConfirm: IUser['passwordConfirm'];
+    months: IUser['months'];
+  };
+}
+
+interface ILoginUser {
+  body: {
+    email: IUser['email'];
+    password: IUser['password'];
+  };
+}
+
+interface IForgotPassword {
+  body: {
+    email: IUser['email'];
+  };
+}
+
+interface IResetPassword {
+  params: {
+    token: string;
+  };
+  body: {
+    password: IUser['password'];
+    passwordConfirm: IUser['passwordConfirm'];
+  };
+}
 
 const signToken = (id: string) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -18,22 +52,8 @@ const verifyJwt: (
 ) => Promise<jwt.JwtPayload> = promisify(jwt.verify);
 
 export default {
-  createUser: catchAsync(async function (req, res, next) {
-    const {
-      name,
-      email,
-      role,
-      password,
-      passwordConfirm,
-      months,
-    }: {
-      name: IUser['name'];
-      email: IUser['email'];
-      role: IUser['role'];
-      password: IUser['password'];
-      passwordConfirm: IUser['passwordConfirm'];
-      months: IUser['months'];
-    } = req.body;
+  createUser: catchAsync<ICreateUser>(async function (req, res, _) {
+    const { name, email, role, password, passwordConfirm, months } = req.body;
 
     // manually add properties for secure creation of user
     const user = await User.create({
@@ -54,14 +74,8 @@ export default {
     });
   }),
 
-  loginUser: catchAsync(async function (req, res, next) {
-    const {
-      email,
-      password,
-    }: {
-      email: IUser['email'];
-      password: IUser['password'];
-    } = req.body;
+  loginUser: catchAsync<ILoginUser>(async function (req, res, next) {
+    const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
 
     // 1) verify that the client sent an email and password
@@ -83,7 +97,7 @@ export default {
     });
   }),
 
-  protectRoute: catchAsync(async (req, res, next) => {
+  protectRoute: catchAsync(async (req, _, next) => {
     // 1) Get token, check if exists
     let token: string;
     if (
@@ -123,8 +137,9 @@ export default {
   }),
 
   restrictRouteTo: (...roles: IUser['role'][]) => {
-    const returned: MiddlewareFunction = (req, res, next) => {
-      if (!roles.includes(req.user.role))
+    const checkRolesToProhibit: MiddlewareFunction = (req, res, next) => {
+      const { role } = req.user;
+      if (!roles.includes(role))
         return next(
           new AppError(
             'You do not have permission to perform this action.',
@@ -133,11 +148,11 @@ export default {
         );
       next();
     };
-    return returned;
+    return checkRolesToProhibit;
   },
 
-  forgotPassword: catchAsync(async (req, res, next) => {
-    const { email }: { email: string } = req.body;
+  forgotPassword: catchAsync<IForgotPassword>(async (req, res, next) => {
+    const { email } = req.body;
 
     // 1) Get user based on POSTed email
     const user = await User.findOne({ email });
@@ -179,19 +194,14 @@ export default {
     }
   }),
 
-  resetPassword: catchAsync(async (req, res, next) => {
-    const {
-      password,
-      passwordConfirm,
-    }: {
-      password: IUser['password'];
-      passwordConfirm: IUser['passwordConfirm'];
-    } = req.body;
+  resetPassword: catchAsync<IResetPassword>(async (req, res, next) => {
+    const { token: receivedToken } = req.params;
+    const { password, passwordConfirm } = req.body;
 
     // 1) Get user based on token
     const hashedToken = crypto
       .createHash('sha256')
-      .update(req.params.token)
+      .update(receivedToken)
       .digest('hex');
 
     // 2) Check if user exists && token hasn't expired

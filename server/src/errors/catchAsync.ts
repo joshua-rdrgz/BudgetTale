@@ -1,14 +1,14 @@
 import { Response, NextFunction } from 'express';
-import { IRequest, MiddlewareFunction } from '@types';
+import { ReqParams, IRequest, MiddlewareFunction } from '@types';
 
-type RouteFunction = (
-  req: IRequest,
+type RouteFunction<T extends ReqParams> = (
+  req: IRequest<T>,
   res: Response,
   next: NextFunction
 ) => Promise<void>;
 
-export default function (fn: RouteFunction) {
+export default function <T extends ReqParams>(fn: RouteFunction<T>) {
   return function (req, res, next) {
     fn(req, res, next).catch(next);
-  } as MiddlewareFunction;
+  } as MiddlewareFunction<T>;
 }
