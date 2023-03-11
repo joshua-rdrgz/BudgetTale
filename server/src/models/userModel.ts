@@ -9,37 +9,12 @@ import {
 } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
+import { IUser, IUserMethods, UserDoc } from 'budgettaleglobaltypes';
 import { IMonth, monthSchema } from './monthModel';
 import { userErrors } from '@errorMessages';
 import { validateUniqueName } from './modelUtils';
 
-export interface IUser {
-  name: string;
-  email: string;
-  photo?: string;
-  role: 'user' | 'admin';
-  password: string;
-  passwordConfirm: string;
-  passwordChangedAt?: Date;
-  passwordResetToken?: string;
-  passwordResetExpires?: Date;
-  months: Types.Array<IMonth>;
-}
-
-interface IUserMethods {
-  verifyCorrectPassword(
-    passwordReceived: string,
-    passwordActual: string
-  ): Promise<boolean>;
-  passwordChangedAfter(JWTTimestamp: number): boolean;
-  createPasswordResetToken(): string;
-}
-
 type UserModel = Model<IUser, {}, IUserMethods>;
-
-export interface UserDoc extends HydratedDocument<IUser, IUserMethods> {
-  password: string;
-}
 
 const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   name: {

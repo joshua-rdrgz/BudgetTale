@@ -3,7 +3,8 @@ import { HydratedDocument } from 'mongoose';
 import { userErrors } from '@errorMessages';
 import { dropTestDB } from 'test/setup.test';
 import { validateMissingOrIncorrectProperty } from './testModelUtils';
-import User, { IUser } from '@models/userModel';
+import User from '@models/userModel';
+import { IUser } from 'budgettaleglobaltypes';
 // import { generateObject } from 'test/testUtils';
 
 type UserDocument = HydratedDocument<IUser>;
@@ -26,7 +27,7 @@ type UserDocument = HydratedDocument<IUser>;
 
 describe('User Model', () => {
   afterEach(async () => await dropTestDB<IUser>(User, 'User'));
-  
+
   it('should contain at least 1 month', async () => {
     const user: UserDocument = new User();
 

@@ -1,45 +1,20 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
-import User, { IUser, UserDoc } from '@models/userModel';
+import User from '@models/userModel';
+import {
+  IUser,
+  IReqCreateUser,
+  IReqLoginUser,
+  IReqForgotPassword,
+  IReqResetPassword,
+  ISuccessfulResAuth,
+  ISuccessfulResAuthUser,
+} from 'budgettaleglobaltypes';
+import { MiddlewareFunction, IRequest } from '@types';
 import catchAsync from '@errors/catchAsync';
 import AppError from '@errors/apiError';
 import sendEmail from '@utils/email';
-import { MiddlewareFunction, IRequest } from '@types';
-
-interface ICreateUser {
-  body: {
-    name: IUser['name'];
-    email: IUser['email'];
-    role: IUser['role'];
-    password: IUser['password'];
-    passwordConfirm: IUser['passwordConfirm'];
-    months: IUser['months'];
-  };
-}
-
-interface ILoginUser {
-  body: {
-    email: IUser['email'];
-    password: IUser['password'];
-  };
-}
-
-interface IForgotPassword {
-  body: {
-    email: IUser['email'];
-  };
-}
-
-interface IResetPassword {
-  params: {
-    token: string;
-  };
-  body: {
-    password: IUser['password'];
-    passwordConfirm: IUser['passwordConfirm'];
-  };
-}
 
 const signToken = (id: string) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -52,8 +27,8 @@ const verifyJwt: (
 ) => Promise<jwt.JwtPayload> = promisify(jwt.verify);
 
 export default {
-  createUser: catchAsync<ICreateUser>(async function (req, res, _) {
-    const { name, email, role, password, passwordConfirm, months } = req.body;
+  createUser: catchAsync<IReqCreateUser>(async function (req, res, _) {
+    const { name, email, role, password, passwordConfirm } = req.body;
 
     // manually add properties for secure creation of user
     const user = await User.create({
@@ -62,7 +37,6 @@ export default {
       role,
       password,
       passwordConfirm,
-      months,
     });
 
     const token = signToken(user._id.toString());
@@ -71,10 +45,10 @@ export default {
       status: 'success',
       token,
       data: { user },
-    });
+    } as ISuccessfulResAuthUser);
   }),
 
-  loginUser: catchAsync<ILoginUser>(async function (req, res, next) {
+  loginUser: catchAsync<IReqLoginUser>(async function (req, res, next) {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
 
@@ -94,7 +68,7 @@ export default {
     res.status(200).json({
       status: 'success',
       token,
-    });
+    } as ISuccessfulResAuth);
   }),
 
   protectRoute: catchAsync(async (req, _, next) => {
@@ -151,7 +125,7 @@ export default {
     return checkRolesToProhibit;
   },
 
-  forgotPassword: catchAsync<IForgotPassword>(async (req, res, next) => {
+  forgotPassword: catchAsync<IReqForgotPassword>(async (req, res, next) => {
     const { email } = req.body;
 
     // 1) Get user based on POSTed email
@@ -194,7 +168,7 @@ export default {
     }
   }),
 
-  resetPassword: catchAsync<IResetPassword>(async (req, res, next) => {
+  resetPassword: catchAsync<IReqResetPassword>(async (req, res, next) => {
     const { token: receivedToken } = req.params;
     const { password, passwordConfirm } = req.body;
 
@@ -226,6 +200,6 @@ export default {
     res.status(200).json({
       status: 'success',
       token,
-    });
+    } as ISuccessfulResAuth);
   }),
 };

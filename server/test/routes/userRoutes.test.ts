@@ -1,10 +1,11 @@
 import { assert } from 'chai';
 import supertest, { SuperTest } from 'supertest';
-import User, { IUser } from '@models/userModel';
+import User from '@models/userModel';
 import app from 'src/app';
 import { dropTestDB } from 'test/setup.test';
 import { generateObject } from 'test/testUtils';
 import { userErrors } from '@errorMessages';
+import { IUser } from 'budgettaleglobaltypes';
 
 type TestApp = SuperTest<supertest.Test>;
 

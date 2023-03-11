@@ -2,9 +2,10 @@ import jwt from 'jsonwebtoken';
 import { assert } from 'chai';
 import supertest, { SuperTest } from 'supertest';
 import app from 'src/app';
-import User, { IUser } from '@models/userModel';
+import User from '@models/userModel';
 import { dropTestDB } from 'test/setup.test';
 import { generateObject } from 'test/testUtils';
+import { IUser } from 'budgettaleglobaltypes';
 
 type TestApp = SuperTest<supertest.Test>;
 
