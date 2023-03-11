@@ -1,5 +1,9 @@
 .DS_Store
 
+# TYPES PACKAGE
+/types/node_modules/
+/types/dist/
+
 # SERVER
 /server/node_modules/
 /server/.env

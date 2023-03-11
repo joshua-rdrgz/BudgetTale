@@ -1,0 +1,18 @@
+{
+  "name": "budgettaleglobaltypes",
+  "version": "1.0.0",
+  "description": "Contains all TypeScript definitions for BudgetTale.",
+  "main": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc -w",
+    "prepare": "npm run build"
+  },
+  "author": "Joshua Rodriguez",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/mongoose": "^5.11.97",
+    "typescript": "^4.9.5"
+  }
+}
